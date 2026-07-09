@@ -637,6 +637,50 @@
       background: var(--text);
     }
 
+    .filter-panel {
+      display: none;
+      margin: -6px 0 18px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(20, 27, 36, .92);
+      box-shadow: var(--shadow);
+    }
+
+    .filter-panel.open {
+      display: block;
+    }
+
+    .filter-status {
+      margin-top: 10px;
+      color: var(--green);
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      max-width: min(360px, calc(100vw - 32px));
+      border: 1px solid rgba(77, 223, 149, .45);
+      border-radius: 8px;
+      background: #101821;
+      color: var(--text);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .mini-list {
       display: grid;
       gap: 10px;
@@ -690,6 +734,7 @@
       .toolbar { justify-content: stretch; }
       .select { width: 100%; }
       .form-grid { grid-template-columns: 1fr; }
+      .filter-panel { margin-top: 0; }
     }
 
     @media (max-width: 480px) {
@@ -756,7 +801,7 @@
         </div>
         <div class="actions">
           <input class="search" aria-label="Поиск по событиям" value="event_id: 503 AND service: billing">
-          <button class="btn" type="button">
+          <button class="btn" type="button" id="dashboardFilterBtn" aria-expanded="false" aria-controls="dashboardFilterPanel">
             <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Фильтры
           </button>
@@ -765,6 +810,46 @@
             Загрузить логи
           </button>
         </div>
+      </section>
+
+      <section class="filter-panel" id="dashboardFilterPanel" aria-label="Фильтры Dashboard">
+        <div class="form-grid">
+          <div class="field">
+            <label>Severity</label>
+            <select id="filterSeverity">
+              <option>Все уровни</option>
+              <option>Critical</option>
+              <option>High</option>
+              <option>Medium</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Источник</label>
+            <select id="filterSource">
+              <option>Все источники</option>
+              <option>Kubernetes</option>
+              <option>PostgreSQL</option>
+              <option>Windows Event Log</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Период</label>
+            <select id="filterPeriod">
+              <option>Последний час</option>
+              <option>24 часа</option>
+              <option>7 дней</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Сервис</label>
+            <input id="filterService" value="billing-api">
+          </div>
+        </div>
+        <div class="toolbar" style="margin-top: 14px;">
+          <button class="btn" type="button" id="resetFiltersBtn">Сбросить</button>
+          <button class="btn primary" type="button" id="applyFiltersBtn">Применить фильтры</button>
+        </div>
+        <div class="filter-status" id="filterStatus" aria-live="polite"></div>
       </section>
 
       <section class="metrics" aria-label="Ключевые метрики">
@@ -1042,13 +1127,13 @@
             <p>Экспорт инцидентов, RCA, метрик MTTR и журналов аудита в PDF, HTML, DOCX и CSV.</p>
           </div>
           <div class="toolbar">
-            <select class="select" aria-label="Формат отчёта">
+            <select class="select" aria-label="Формат отчёта" id="reportFormat">
               <option>PDF</option>
               <option>HTML</option>
               <option>DOCX</option>
               <option>CSV</option>
             </select>
-            <button class="btn primary" type="button">Сформировать</button>
+            <button class="btn primary" type="button" id="downloadReportBtn">Скачать отчёт</button>
           </div>
         </section>
 
@@ -1133,6 +1218,118 @@
 
     navButtons.forEach((button) => {
       button.addEventListener("click", () => activateView(button.dataset.view));
+    });
+
+    const filterButton = document.getElementById("dashboardFilterBtn");
+    const filterPanel = document.getElementById("dashboardFilterPanel");
+    const filterStatus = document.getElementById("filterStatus");
+    const applyFiltersButton = document.getElementById("applyFiltersBtn");
+    const resetFiltersButton = document.getElementById("resetFiltersBtn");
+    const reportFormat = document.getElementById("reportFormat");
+    const downloadReportButton = document.getElementById("downloadReportBtn");
+
+    function showToast(message) {
+      let toast = document.querySelector(".toast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.className = "toast";
+        toast.setAttribute("role", "status");
+        document.body.appendChild(toast);
+      }
+
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    filterButton?.addEventListener("click", () => {
+      const isOpen = filterPanel.classList.toggle("open");
+      filterButton.setAttribute("aria-expanded", String(isOpen));
+      filterStatus.textContent = isOpen ? "Фильтры открыты. Выберите параметры и нажмите «Применить фильтры»." : "";
+    });
+
+    applyFiltersButton?.addEventListener("click", () => {
+      const severity = document.getElementById("filterSeverity").value;
+      const source = document.getElementById("filterSource").value;
+      const period = document.getElementById("filterPeriod").value;
+      const service = document.getElementById("filterService").value.trim() || "все сервисы";
+      filterStatus.textContent = `Применено: ${severity}, ${source}, ${period}, сервис: ${service}.`;
+      showToast("Фильтры Dashboard применены");
+    });
+
+    resetFiltersButton?.addEventListener("click", () => {
+      document.getElementById("filterSeverity").selectedIndex = 0;
+      document.getElementById("filterSource").selectedIndex = 0;
+      document.getElementById("filterPeriod").selectedIndex = 0;
+      document.getElementById("filterService").value = "";
+      filterStatus.textContent = "Фильтры сброшены.";
+      showToast("Фильтры сброшены");
+    });
+
+    function buildReport(format) {
+      const rows = [
+        ["RCA: Billing API outage", "Сегодня", "PDF", "готов"],
+        ["MTTR summary", "Неделя", "HTML", "готов"],
+        ["Audit log export", "24 часа", "CSV", "очередь"],
+        ["Knowledge base changes", "Месяц", "DOCX", "черновик"]
+      ];
+
+      if (format === "CSV") {
+        return {
+          mime: "text/csv;charset=utf-8",
+          extension: "csv",
+          content: "Название;Период;Формат;Статус\n" + rows.map((row) => row.join(";")).join("\n")
+        };
+      }
+
+      const html = `<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><title>Отчёт AI-анализатора инцидентов</title></head>
+<body>
+  <h1>Отчёт AI-анализатора инцидентов</h1>
+  <p>Инцидент: Billing API outage. Вероятная первопричина: retry storm после деплоя v2.18.4.</p>
+  <h2>Метрики</h2>
+  <ul>
+    <li>MTTR: 11 минут</li>
+    <li>Уверенность RCA: 91%</li>
+    <li>Открытые инциденты: 7</li>
+  </ul>
+  <h2>Отчёты</h2>
+  <table border="1" cellspacing="0" cellpadding="8">
+    <tr><th>Название</th><th>Период</th><th>Формат</th><th>Статус</th></tr>
+    ${rows.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`).join("")}
+  </table>
+  <h2>Рекомендации</h2>
+  <ol>
+    <li>Откатить деплой v2.18.4.</li>
+    <li>Ограничить параллелизм воркеров до 40.</li>
+    <li>Вернуть retry jitter и добавить алерт на pool &gt; 80%.</li>
+  </ol>
+</body>
+</html>`;
+
+      const extension = format === "DOCX" ? "doc" : "html";
+      return {
+        mime: "text/html;charset=utf-8",
+        extension,
+        content: html
+      };
+    }
+
+    downloadReportButton?.addEventListener("click", () => {
+      const selectedFormat = reportFormat.value;
+      const report = buildReport(selectedFormat);
+      const blob = new Blob([report.content], { type: report.mime });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `ai-incident-report.${report.extension}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      showToast(`Отчёт ${selectedFormat} подготовлен к скачиванию`);
     });
   </script>
 </body>
