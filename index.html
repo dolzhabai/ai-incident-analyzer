@@ -460,6 +460,183 @@
       margin-top: 18px;
     }
 
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, .48fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .select {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      background: #101821;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.red { background: rgba(255, 107, 115, .16); color: #ffb0b5; }
+    .pill.amber { background: rgba(255, 202, 99, .15); color: #ffd98b; }
+    .pill.cyan { background: rgba(86, 199, 255, .14); color: #9adfff; }
+    .pill.green { background: rgba(77, 223, 149, .14); color: #9ff0c8; }
+
+    .split-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #101821;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      background: #101821;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .switch-row:last-child {
+      border-bottom: 0;
+    }
+
+    .switch-row span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid #2c3a4d;
+      background: #0c1219;
+      padding: 2px;
+      display: inline-flex;
+      justify-content: flex-start;
+    }
+
+    .switch.on {
+      justify-content: flex-end;
+      background: rgba(77, 223, 149, .18);
+      border-color: rgba(77, 223, 149, .5);
+    }
+
+    .switch::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--text);
+    }
+
     .mini-list {
       display: grid;
       gap: 10px;
@@ -498,7 +675,7 @@
       }
       .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .side-status { display: none; }
-      .grid, .lower { grid-template-columns: 1fr; }
+      .grid, .lower, .workspace-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 760px) {
@@ -510,6 +687,9 @@
       .incident-card { grid-template-columns: 1fr; }
       .score { text-align: left; }
       .nav { grid-template-columns: 1fr 1fr; }
+      .toolbar { justify-content: stretch; }
+      .select { width: 100%; }
+      .form-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -532,29 +712,29 @@
       </div>
 
       <nav class="nav" aria-label="Основная навигация">
-        <button class="active" type="button">
+        <button class="active" type="button" data-view="dashboard" aria-controls="view-dashboard">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-4H4v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          Панель
+          Dashboard
         </button>
-        <button type="button">
+        <button type="button" data-view="logs" aria-controls="view-logs">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Логи
+          Logs
         </button>
-        <button type="button">
+        <button type="button" data-view="correlation" aria-controls="view-correlation">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v5m0 6v5M4 12h5m6 0h5m-2.5-6.5L14 9m-4 6-3.5 3.5m0-13L10 9m4 6 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Корреляция
+          Correlation
         </button>
-        <button type="button">
+        <button type="button" data-view="rca" aria-controls="view-rca">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 7v6c0 4.5 3.2 7.4 8 8 4.8-.6 8-3.5 8-8V7l-8-4Z" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           RCA
         </button>
-        <button type="button">
+        <button type="button" data-view="reports" aria-controls="view-reports">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6M9 13h6M9 17h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Отчёты
+          Reports
         </button>
-        <button type="button">
+        <button type="button" data-view="settings" aria-controls="view-settings">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7.5 7.5 0 0 0-2-1.2L14.2 3h-4.4l-.3 2.7a7.5 7.5 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1c.6.5 1.3.9 2 1.2l.3 2.7h4.4l.3-2.7c.7-.3 1.4-.7 2-1.2l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-          Настройки
+          Settings
         </button>
       </nav>
 
@@ -568,6 +748,7 @@
     </aside>
 
     <main>
+      <section class="view active" id="view-dashboard" data-title="Dashboard">
       <section class="topbar">
         <div class="title">
           <h2>AI-анализатор инцидентов</h2>
@@ -690,7 +871,269 @@
           </ul>
         </div>
       </section>
+      </section>
+
+      <section class="view" id="view-logs" data-title="Logs">
+        <section class="topbar">
+          <div class="title">
+            <h2>Журнал событий</h2>
+            <p>Поиск и фильтрация нормализованных логов из Kubernetes, Windows Event Log, Nginx, PostgreSQL и сетевых устройств.</p>
+          </div>
+          <div class="toolbar">
+            <input class="search" aria-label="Поиск по логам" value="severity: error OR event_id: 503">
+            <select class="select" aria-label="Источник логов">
+              <option>Все источники</option>
+              <option>Kubernetes</option>
+              <option>Windows Event Log</option>
+              <option>Nginx</option>
+            </select>
+            <button class="btn primary" type="button">Применить</button>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Последние события</h3>
+              <span class="pill cyan">128k / мин</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Время</th>
+                    <th>Источник</th>
+                    <th>Уровень</th>
+                    <th>Сервис</th>
+                    <th>Сообщение</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>14:42:18</td>
+                    <td>Kubernetes</td>
+                    <td><span class="pill red">ERROR</span></td>
+                    <td>billing-api</td>
+                    <td>HTTP 503 после rollout v2.18.4, pod restart count = 7</td>
+                  </tr>
+                  <tr>
+                    <td>14:41:55</td>
+                    <td>PostgreSQL</td>
+                    <td><span class="pill amber">WARN</span></td>
+                    <td>invoice-db</td>
+                    <td>connection pool exhausted, waiting clients = 184</td>
+                  </tr>
+                  <tr>
+                    <td>14:40:37</td>
+                    <td>Nginx</td>
+                    <td><span class="pill red">ERROR</span></td>
+                    <td>edge-gateway</td>
+                    <td>upstream timed out while reading response header</td>
+                  </tr>
+                  <tr>
+                    <td>14:39:02</td>
+                    <td>Windows Event Log</td>
+                    <td><span class="pill cyan">INFO</span></td>
+                    <td>dc-02</td>
+                    <td>Kerberos authentication latency returned to baseline</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Нормализация</h3></div>
+            <div class="split-list">
+              <div class="flow-step"><strong>Единая модель</strong><p>Timestamp, Source, Hostname, Severity, Event ID, User, IP Address, Message и Tags.</p></div>
+              <div class="flow-step"><strong>Парсеры</strong><p>TXT, CSV, JSON, XML, Syslog, IIS, Apache, Docker, VMware и сетевые устройства.</p></div>
+              <div class="flow-step"><strong>Хранилище</strong><p>Горячий поиск в Elasticsearch, долговременная история в PostgreSQL.</p></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-correlation" data-title="Correlation">
+        <section class="topbar">
+          <div class="title">
+            <h2>Корреляция событий</h2>
+            <p>Построение цепочек инцидента, зависимостей сервисов и временной связи между ошибками, деплоями и инфраструктурными событиями.</p>
+          </div>
+          <div class="toolbar">
+            <select class="select" aria-label="Окно корреляции">
+              <option>Последние 30 минут</option>
+              <option>Последние 2 часа</option>
+              <option>Последние 24 часа</option>
+            </select>
+            <button class="btn primary" type="button">Пересчитать граф</button>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Граф зависимости</h3>
+              <span class="pill amber">5 узлов риска</span>
+            </div>
+            <div class="map" aria-label="Интерактивный граф корреляции">
+              <div class="edge e1"></div><div class="edge e2"></div><div class="edge e3"></div><div class="edge e4"></div>
+              <div class="node n1">Gateway</div>
+              <div class="node n2 danger">Billing API</div>
+              <div class="node n3 warning">PostgreSQL</div>
+              <div class="node n4">RabbitMQ</div>
+              <div class="node n5">Workers</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Цепочка событий</h3></div>
+            <div class="split-list">
+              <div class="flow-step"><strong>14:31 Deploy</strong><p>Начался rollout billing-api v2.18.4 в production namespace.</p></div>
+              <div class="flow-step"><strong>14:35 Retry storm</strong><p>Платёжные воркеры увеличили количество повторных запросов в 6 раз.</p></div>
+              <div class="flow-step"><strong>14:39 Pool saturation</strong><p>PostgreSQL начал отклонять новые соединения из-за лимита пула.</p></div>
+              <div class="flow-step"><strong>14:42 Customer impact</strong><p>Gateway фиксирует рост HTTP 503 и деградацию оплаты.</p></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-rca" data-title="RCA">
+        <section class="topbar">
+          <div class="title">
+            <h2>Root Cause Analysis</h2>
+            <p>AI-модуль объединяет корреляцию, похожие инциденты и базу знаний, чтобы показать вероятную первопричину и план устранения.</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn" type="button">Сохранить в KB</button>
+            <button class="btn primary" type="button">Создать remediation</button>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Разбор инцидента INC-2048</h3>
+              <span class="pill green">91% уверенность</span>
+            </div>
+            <div class="split-list">
+              <div class="finding"><strong>Первопричина</strong><p>Новый релиз billing-api отключил экспоненциальный backoff для повторных запросов, что вызвало перегрузку PostgreSQL.</p><div class="bar"><span style="width:91%"></span></div></div>
+              <div class="finding"><strong>Затронутые сервисы</strong><p>Gateway, Billing API, Payment Workers, PostgreSQL invoice-db и очередь RabbitMQ billing.retry.</p></div>
+              <div class="finding"><strong>Риск повторения</strong><p>Высокий, пока лимиты concurrency и политика retry не закреплены в конфигурации окружения.</p></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>План действий</h3></div>
+            <ul class="mini-list">
+              <li><strong>1. Откатить v2.18.4</strong><span>срочно</span></li>
+              <li><strong>2. Ограничить воркеры</strong><span>40 потоков</span></li>
+              <li><strong>3. Вернуть retry jitter</strong><span>конфиг</span></li>
+              <li><strong>4. Добавить алерт</strong><span>pool &gt; 80%</span></li>
+              <li><strong>5. Обновить KB</strong><span>после RCA</span></li>
+            </ul>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-reports" data-title="Reports">
+        <section class="topbar">
+          <div class="title">
+            <h2>Отчёты</h2>
+            <p>Экспорт инцидентов, RCA, метрик MTTR и журналов аудита в PDF, HTML, DOCX и CSV.</p>
+          </div>
+          <div class="toolbar">
+            <select class="select" aria-label="Формат отчёта">
+              <option>PDF</option>
+              <option>HTML</option>
+              <option>DOCX</option>
+              <option>CSV</option>
+            </select>
+            <button class="btn primary" type="button">Сформировать</button>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Готовые отчёты</h3></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Название</th><th>Период</th><th>Формат</th><th>Статус</th></tr></thead>
+                <tbody>
+                  <tr><td>RCA: Billing API outage</td><td>Сегодня</td><td>PDF</td><td><span class="pill green">готов</span></td></tr>
+                  <tr><td>MTTR summary</td><td>Неделя</td><td>HTML</td><td><span class="pill green">готов</span></td></tr>
+                  <tr><td>Audit log export</td><td>24 часа</td><td>CSV</td><td><span class="pill amber">очередь</span></td></tr>
+                  <tr><td>Knowledge base changes</td><td>Месяц</td><td>DOCX</td><td><span class="pill cyan">черновик</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Шаблон отчёта</h3></div>
+            <div class="split-list">
+              <div class="flow-step"><strong>Executive summary</strong><p>Краткая причина, влияние на бизнес и время восстановления.</p></div>
+              <div class="flow-step"><strong>Timeline</strong><p>События по минутам из логов, метрик и деплой-системы.</p></div>
+              <div class="flow-step"><strong>Action items</strong><p>Ответственные, сроки и меры предотвращения повторения.</p></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings" data-title="Settings">
+        <section class="topbar">
+          <div class="title">
+            <h2>Настройки платформы</h2>
+            <p>Подключения, AI-провайдеры, права доступа, уведомления и параметры хранения логов.</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn" type="button">Проверить подключения</button>
+            <button class="btn primary" type="button">Сохранить</button>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Интеграции</h3></div>
+            <div class="form-grid">
+              <div class="field"><label>AI provider</label><select><option>OpenAI</option><option>Azure OpenAI</option><option>Ollama</option></select></div>
+              <div class="field"><label>Search backend</label><select><option>Elasticsearch</option><option>OpenSearch</option></select></div>
+              <div class="field"><label>Retention</label><input value="180 дней"></div>
+              <div class="field"><label>RBAC group</label><input value="IT Operations"></div>
+              <div class="field"><label>Notification channel</label><select><option>Telegram</option><option>Email</option><option>Slack</option><option>Microsoft Teams</option></select></div>
+              <div class="field"><label>API mode</label><select><option>REST + OpenAPI</option><option>Read-only API</option></select></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Функции</h3></div>
+            <div class="switch-row"><div><strong>RAG по базе знаний</strong><br><span>Искать похожие инциденты</span></div><span class="switch on" aria-hidden="true"></span></div>
+            <div class="switch-row"><div><strong>Авто RCA</strong><br><span>Запускать анализ при Critical</span></div><span class="switch on" aria-hidden="true"></span></div>
+            <div class="switch-row"><div><strong>Audit Log</strong><br><span>Фиксировать действия пользователей</span></div><span class="switch on" aria-hidden="true"></span></div>
+            <div class="switch-row"><div><strong>Авто-remediation</strong><br><span>Только после подтверждения</span></div><span class="switch" aria-hidden="true"></span></div>
+          </div>
+        </section>
+      </section>
     </main>
   </div>
+  <script>
+    const navButtons = document.querySelectorAll(".nav button[data-view]");
+    const views = document.querySelectorAll(".view");
+
+    function activateView(name) {
+      navButtons.forEach((button) => {
+        const isActive = button.dataset.view === name;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-selected", String(isActive));
+      });
+
+      views.forEach((view) => {
+        view.classList.toggle("active", view.id === `view-${name}`);
+      });
+    }
+
+    navButtons.forEach((button) => {
+      button.addEventListener("click", () => activateView(button.dataset.view));
+    });
+  </script>
 </body>
 </html>
