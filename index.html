@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Incident Analyzer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1017;
+      --panel: #141b24;
+      --panel-2: #101720;
+      --line: #263141;
+      --text: #eef4f8;
+      --muted: #91a2b4;
+      --green: #4ddf95;
+      --cyan: #56c7ff;
+      --amber: #ffca63;
+      --red: #ff6b73;
+      --violet: #a58bff;
+      --shadow: 0 18px 50px rgba(0, 0, 0, .32);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(86, 199, 255, .15), transparent 28%),
+        linear-gradient(135deg, #090d13 0%, #111923 48%, #0b1118 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: rgba(10, 15, 22, .86);
+      padding: 22px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(from 210deg, var(--cyan), var(--green), var(--amber), var(--cyan));
+      color: #071017;
+      font-weight: 900;
+      box-shadow: 0 0 28px rgba(86, 199, 255, .28);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav button {
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 10px 11px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      color: var(--text);
+      background: #17212c;
+      border-color: #243446;
+    }
+
+    .nav svg,
+    .icon {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+    }
+
+    .side-status {
+      margin-top: 28px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .side-status strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .health-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 7px 0;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 7px;
+    }
+
+    .ok { background: var(--green); }
+    .warn { background: var(--amber); }
+    .bad { background: var(--red); }
+
+    main {
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .title h2 {
+      margin: 0 0 6px;
+      font-size: clamp(24px, 3vw, 36px);
+      letter-spacing: 0;
+    }
+
+    .title p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .search {
+      min-width: min(360px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #182331;
+      color: var(--text);
+      padding: 10px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #1bbf7a, #1596d2);
+      border-color: transparent;
+      color: #041018;
+      font-weight: 800;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric, .panel, .incident-card {
+      background: rgba(20, 27, 36, .92);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      padding: 16px;
+      min-height: 118px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 31px;
+      margin: 10px 0 8px;
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      color: var(--green);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .panel h3 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .tabs {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0c1219;
+    }
+
+    .tabs button {
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: #223044;
+      color: var(--text);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .incident-card {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      box-shadow: none;
+      background: #101821;
+    }
+
+    .severity {
+      width: 78px;
+      border-radius: 999px;
+      text-align: center;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sev-critical { background: rgba(255, 107, 115, .16); color: #ffb0b5; }
+    .sev-high { background: rgba(255, 202, 99, .15); color: #ffd98b; }
+    .sev-medium { background: rgba(86, 199, 255, .14); color: #9adfff; }
+
+    .incident-card h4 {
+      margin: 0 0 5px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .incident-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .score {
+      text-align: right;
+      min-width: 82px;
+    }
+
+    .score strong {
+      display: block;
+      font-size: 22px;
+      color: var(--green);
+    }
+
+    .score span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .map {
+      position: relative;
+      min-height: 330px;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        #0f1720;
+      background-size: 38px 38px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
+    .node {
+      position: absolute;
+      width: 92px;
+      min-height: 54px;
+      border-radius: 8px;
+      background: #192534;
+      border: 1px solid #34465d;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 7px;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .node::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      box-shadow: 0 0 16px currentColor;
+    }
+
+    .node.warning::before { background: var(--amber); }
+    .node.danger::before { background: var(--red); }
+
+    .edge {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(86, 199, 255, .05), rgba(86, 199, 255, .75));
+      transform-origin: left center;
+    }
+
+    .n1 { left: 8%; top: 18%; }
+    .n2 { left: 36%; top: 12%; }
+    .n3 { left: 66%; top: 22%; }
+    .n4 { left: 25%; top: 58%; }
+    .n5 { left: 58%; top: 64%; }
+    .e1 { left: 24%; top: 27%; width: 180px; transform: rotate(-10deg); }
+    .e2 { left: 52%; top: 28%; width: 150px; transform: rotate(12deg); }
+    .e3 { left: 22%; top: 45%; width: 155px; transform: rotate(52deg); }
+    .e4 { left: 43%; top: 64%; width: 170px; transform: rotate(4deg); }
+
+    .ai-box {
+      display: grid;
+      gap: 12px;
+    }
+
+    .finding {
+      border: 1px solid var(--line);
+      background: #101821;
+      border-radius: 8px;
+      padding: 13px;
+    }
+
+    .finding strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .finding p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .bar {
+      height: 9px;
+      background: #202c3b;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: inherit;
+    }
+
+    .lower {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mini-list li:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .mini-list strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    @media (max-width: 1120px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .side-status { display: none; }
+      .grid, .lower { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      main { padding: 16px; }
+      .topbar { align-items: stretch; flex-direction: column; }
+      .actions { justify-content: stretch; }
+      .search, .btn { width: 100%; justify-content: center; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .incident-card { grid-template-columns: 1fr; }
+      .score { text-align: left; }
+      .nav { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .metrics { grid-template-columns: 1fr; }
+      .panel-head { align-items: stretch; flex-direction: column; }
+      .tabs { width: 100%; }
+      .tabs button { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div>
+          <h1>Incident Analyzer</h1>
+          <span>Root Cause Platform</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Основная навигация">
+        <button class="active" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-4H4v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Dashboard
+        </button>
+        <button type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Logs
+        </button>
+        <button type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v5m0 6v5M4 12h5m6 0h5m-2.5-6.5L14 9m-4 6-3.5 3.5m0-13L10 9m4 6 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Correlation
+        </button>
+        <button type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 7v6c0 4.5 3.2 7.4 8 8 4.8-.6 8-3.5 8-8V7l-8-4Z" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          RCA
+        </button>
+        <button type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6M9 13h6M9 17h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Reports
+        </button>
+        <button type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7.5 7.5 0 0 0-2-1.2L14.2 3h-4.4l-.3 2.7a7.5 7.5 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1c.6.5 1.3.9 2 1.2l.3 2.7h4.4l.3-2.7c.7-.3 1.4-.7 2-1.2l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          Settings
+        </button>
+      </nav>
+
+      <div class="side-status">
+        <strong>Pipeline health</strong>
+        <div class="health-row"><span><i class="dot ok"></i>PostgreSQL</span><span>99.99%</span></div>
+        <div class="health-row"><span><i class="dot ok"></i>Elasticsearch</span><span>14 ms</span></div>
+        <div class="health-row"><span><i class="dot warn"></i>RabbitMQ</span><span>72%</span></div>
+        <div class="health-row"><span><i class="dot bad"></i>Billing API</span><span>down</span></div>
+      </div>
+    </aside>
+
+    <main>
+      <section class="topbar">
+        <div class="title">
+          <h2>AI Incident Analyzer</h2>
+          <p>Единая консоль для сбора логов, корреляции событий, поиска первопричин и AI-рекомендаций по устранению аварий.</p>
+        </div>
+        <div class="actions">
+          <input class="search" aria-label="Поиск по событиям" value="event_id: 503 AND service: billing">
+          <button class="btn" type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Filters
+          </button>
+          <button class="btn primary" type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Ingest logs
+          </button>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Ключевые метрики">
+        <div class="metric"><span>Events / min</span><strong>128k</strong><small>+18% above baseline</small></div>
+        <div class="metric"><span>MTTR</span><strong>11m</strong><small>-52% this quarter</small></div>
+        <div class="metric"><span>RCA confidence</span><strong>86%</strong><small>AI + correlation</small></div>
+        <div class="metric"><span>Open incidents</span><strong>7</strong><small>2 critical</small></div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Incident timeline</h3>
+            <div class="tabs" role="tablist">
+              <button class="active" type="button">Live</button>
+              <button type="button">24h</button>
+              <button type="button">7d</button>
+            </div>
+          </div>
+          <div class="timeline">
+            <article class="incident-card">
+              <span class="severity sev-critical">Critical</span>
+              <div>
+                <h4>Billing API returns HTTP 503 after deploy</h4>
+                <p>12 hosts affected, error rate 34%, first anomaly detected in Kubernetes rollout logs.</p>
+              </div>
+              <div class="score"><strong>91%</strong><span>root cause</span></div>
+            </article>
+            <article class="incident-card">
+              <span class="severity sev-high">High</span>
+              <div>
+                <h4>PostgreSQL connection pool exhausted</h4>
+                <p>Spike correlates with retry storm from payment workers and slow queries on invoices.</p>
+              </div>
+              <div class="score"><strong>78%</strong><span>confidence</span></div>
+            </article>
+            <article class="incident-card">
+              <span class="severity sev-medium">Medium</span>
+              <div>
+                <h4>AD authentication latency increased</h4>
+                <p>WinRM and security logs show timeout cluster around domain controller dc-02.</p>
+              </div>
+              <div class="score"><strong>64%</strong><span>confidence</span></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>AI analysis</h3>
+            <button class="btn" type="button">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Export
+            </button>
+          </div>
+          <div class="ai-box">
+            <div class="finding">
+              <strong>Likely root cause</strong>
+              <p>New billing release increased outbound calls without backoff, saturating the database pool and causing cascading 503 responses.</p>
+              <div class="bar" aria-hidden="true"><span style="width:91%"></span></div>
+            </div>
+            <div class="finding">
+              <strong>Recommended action</strong>
+              <p>Rollback deployment v2.18.4, cap worker concurrency at 40, then re-enable adaptive retry with jitter.</p>
+            </div>
+            <div class="finding">
+              <strong>Similar incidents</strong>
+              <p>KB-1842, KB-2198 and KB-2210 share the same retry storm signature across RabbitMQ and PostgreSQL.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lower">
+        <div class="panel">
+          <div class="panel-head"><h3>Service dependency map</h3></div>
+          <div class="map" aria-label="Карта зависимостей сервисов">
+            <div class="edge e1"></div><div class="edge e2"></div><div class="edge e3"></div><div class="edge e4"></div>
+            <div class="node n1">Gateway</div>
+            <div class="node n2 danger">Billing API</div>
+            <div class="node n3 warning">PostgreSQL</div>
+            <div class="node n4">RabbitMQ</div>
+            <div class="node n5">Workers</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Top log sources</h3></div>
+          <ul class="mini-list">
+            <li><strong>Kubernetes</strong><span>4.2M events</span></li>
+            <li><strong>Nginx</strong><span>1.8M events</span></li>
+            <li><strong>Windows Event Log</strong><span>980k events</span></li>
+            <li><strong>PostgreSQL</strong><span>642k events</span></li>
+            <li><strong>Cisco ASA</strong><span>411k events</span></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Automation queue</h3></div>
+          <ul class="mini-list">
+            <li><strong>Normalize JSON logs</strong><span>running</span></li>
+            <li><strong>RAG enrichment</strong><span>queued</span></li>
+            <li><strong>Slack alert</strong><span>sent</span></li>
+            <li><strong>PDF report</strong><span>ready</span></li>
+            <li><strong>OpenAPI sync</strong><span>scheduled</span></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
