@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Incident Analyzer</title>
+  <title>AI-анализатор инцидентов</title>
   <style>
     :root {
       color-scheme: dark;
@@ -526,23 +526,23 @@
       <div class="brand">
         <div class="brand-mark">AI</div>
         <div>
-          <h1>Incident Analyzer</h1>
-          <span>Root Cause Platform</span>
+          <h1>Анализатор инцидентов</h1>
+          <span>Платформа поиска первопричин</span>
         </div>
       </div>
 
       <nav class="nav" aria-label="Основная навигация">
         <button class="active" type="button">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-4H4v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          Dashboard
+          Панель
         </button>
         <button type="button">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Logs
+          Логи
         </button>
         <button type="button">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v5m0 6v5M4 12h5m6 0h5m-2.5-6.5L14 9m-4 6-3.5 3.5m0-13L10 9m4 6 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Correlation
+          Корреляция
         </button>
         <button type="button">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 7v6c0 4.5 3.2 7.4 8 8 4.8-.6 8-3.5 8-8V7l-8-4Z" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -550,83 +550,83 @@
         </button>
         <button type="button">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6M9 13h6M9 17h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Reports
+          Отчёты
         </button>
         <button type="button">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7.5 7.5 0 0 0-2-1.2L14.2 3h-4.4l-.3 2.7a7.5 7.5 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1c.6.5 1.3.9 2 1.2l.3 2.7h4.4l.3-2.7c.7-.3 1.4-.7 2-1.2l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-          Settings
+          Настройки
         </button>
       </nav>
 
       <div class="side-status">
-        <strong>Pipeline health</strong>
+        <strong>Состояние конвейера</strong>
         <div class="health-row"><span><i class="dot ok"></i>PostgreSQL</span><span>99.99%</span></div>
         <div class="health-row"><span><i class="dot ok"></i>Elasticsearch</span><span>14 ms</span></div>
         <div class="health-row"><span><i class="dot warn"></i>RabbitMQ</span><span>72%</span></div>
-        <div class="health-row"><span><i class="dot bad"></i>Billing API</span><span>down</span></div>
+        <div class="health-row"><span><i class="dot bad"></i>Billing API</span><span>недоступен</span></div>
       </div>
     </aside>
 
     <main>
       <section class="topbar">
         <div class="title">
-          <h2>AI Incident Analyzer</h2>
+          <h2>AI-анализатор инцидентов</h2>
           <p>Единая консоль для сбора логов, корреляции событий, поиска первопричин и AI-рекомендаций по устранению аварий.</p>
         </div>
         <div class="actions">
           <input class="search" aria-label="Поиск по событиям" value="event_id: 503 AND service: billing">
           <button class="btn" type="button">
             <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Filters
+            Фильтры
           </button>
           <button class="btn primary" type="button">
             <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Ingest logs
+            Загрузить логи
           </button>
         </div>
       </section>
 
       <section class="metrics" aria-label="Ключевые метрики">
-        <div class="metric"><span>Events / min</span><strong>128k</strong><small>+18% above baseline</small></div>
+        <div class="metric"><span>Событий / мин</span><strong>128k</strong><small>+18% выше базовой линии</small></div>
         <div class="metric"><span>MTTR</span><strong>11m</strong><small>-52% this quarter</small></div>
-        <div class="metric"><span>RCA confidence</span><strong>86%</strong><small>AI + correlation</small></div>
-        <div class="metric"><span>Open incidents</span><strong>7</strong><small>2 critical</small></div>
+        <div class="metric"><span>Уверенность RCA</span><strong>86%</strong><small>AI + корреляция</small></div>
+        <div class="metric"><span>Открытые инциденты</span><strong>7</strong><small>2 критических</small></div>
       </section>
 
       <section class="grid">
         <div class="panel">
           <div class="panel-head">
-            <h3>Incident timeline</h3>
+            <h3>Лента инцидентов</h3>
             <div class="tabs" role="tablist">
-              <button class="active" type="button">Live</button>
+              <button class="active" type="button">Сейчас</button>
               <button type="button">24h</button>
               <button type="button">7d</button>
             </div>
           </div>
           <div class="timeline">
             <article class="incident-card">
-              <span class="severity sev-critical">Critical</span>
+              <span class="severity sev-critical">Критично</span>
               <div>
-                <h4>Billing API returns HTTP 503 after deploy</h4>
-                <p>12 hosts affected, error rate 34%, first anomaly detected in Kubernetes rollout logs.</p>
+                <h4>Billing API возвращает HTTP 503 после деплоя</h4>
+                <p>Затронуто 12 хостов, доля ошибок 34%, первая аномалия найдена в логах rollout Kubernetes.</p>
               </div>
-              <div class="score"><strong>91%</strong><span>root cause</span></div>
+              <div class="score"><strong>91%</strong><span>первопричина</span></div>
             </article>
             <article class="incident-card">
-              <span class="severity sev-high">High</span>
+              <span class="severity sev-high">Высокий</span>
               <div>
-                <h4>PostgreSQL connection pool exhausted</h4>
-                <p>Spike correlates with retry storm from payment workers and slow queries on invoices.</p>
+                <h4>Исчерпан пул подключений PostgreSQL</h4>
+                <p>Всплеск коррелирует со штормом повторных запросов от платёжных воркеров и медленными запросами по счетам.</p>
               </div>
-              <div class="score"><strong>78%</strong><span>confidence</span></div>
+              <div class="score"><strong>78%</strong><span>уверенность</span></div>
             </article>
             <article class="incident-card">
-              <span class="severity sev-medium">Medium</span>
+              <span class="severity sev-medium">Средний</span>
               <div>
-                <h4>AD authentication latency increased</h4>
-                <p>WinRM and security logs show timeout cluster around domain controller dc-02.</p>
+                <h4>Увеличилась задержка аутентификации AD</h4>
+                <p>Логи WinRM и безопасности показывают кластер таймаутов вокруг контроллера домена dc-02.</p>
               </div>
-              <div class="score"><strong>64%</strong><span>confidence</span></div>
+              <div class="score"><strong>64%</strong><span>уверенность</span></div>
             </article>
           </div>
         </div>
@@ -636,22 +636,22 @@
             <h3>AI analysis</h3>
             <button class="btn" type="button">
               <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Export
+              Экспорт
             </button>
           </div>
           <div class="ai-box">
             <div class="finding">
-              <strong>Likely root cause</strong>
-              <p>New billing release increased outbound calls without backoff, saturating the database pool and causing cascading 503 responses.</p>
+              <strong>Вероятная первопричина</strong>
+              <p>Новый релиз биллинга увеличил число исходящих вызовов без backoff, заполнил пул базы данных и вызвал каскадные ответы 503.</p>
               <div class="bar" aria-hidden="true"><span style="width:91%"></span></div>
             </div>
             <div class="finding">
-              <strong>Recommended action</strong>
-              <p>Rollback deployment v2.18.4, cap worker concurrency at 40, then re-enable adaptive retry with jitter.</p>
+              <strong>Рекомендуемое действие</strong>
+              <p>Откатить деплой v2.18.4, ограничить параллелизм воркеров до 40, затем снова включить адаптивные повторы с jitter.</p>
             </div>
             <div class="finding">
-              <strong>Similar incidents</strong>
-              <p>KB-1842, KB-2198 and KB-2210 share the same retry storm signature across RabbitMQ and PostgreSQL.</p>
+              <strong>Похожие инциденты</strong>
+              <p>KB-1842, KB-2198 и KB-2210 имеют тот же паттерн шторма повторов в RabbitMQ и PostgreSQL.</p>
             </div>
           </div>
         </div>
@@ -659,34 +659,34 @@
 
       <section class="lower">
         <div class="panel">
-          <div class="panel-head"><h3>Service dependency map</h3></div>
+          <div class="panel-head"><h3>Карта зависимостей сервисов</h3></div>
           <div class="map" aria-label="Карта зависимостей сервисов">
             <div class="edge e1"></div><div class="edge e2"></div><div class="edge e3"></div><div class="edge e4"></div>
-            <div class="node n1">Gateway</div>
+            <div class="node n1">Шлюз</div>
             <div class="node n2 danger">Billing API</div>
             <div class="node n3 warning">PostgreSQL</div>
             <div class="node n4">RabbitMQ</div>
-            <div class="node n5">Workers</div>
+            <div class="node n5">Воркеры</div>
           </div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>Top log sources</h3></div>
+          <div class="panel-head"><h3>Главные источники логов</h3></div>
           <ul class="mini-list">
-            <li><strong>Kubernetes</strong><span>4.2M events</span></li>
-            <li><strong>Nginx</strong><span>1.8M events</span></li>
-            <li><strong>Windows Event Log</strong><span>980k events</span></li>
-            <li><strong>PostgreSQL</strong><span>642k events</span></li>
-            <li><strong>Cisco ASA</strong><span>411k events</span></li>
+            <li><strong>Kubernetes</strong><span>4,2 млн событий</span></li>
+            <li><strong>Nginx</strong><span>1,8 млн событий</span></li>
+            <li><strong>Windows Event Log</strong><span>980 тыс. событий</span></li>
+            <li><strong>PostgreSQL</strong><span>642 тыс. событий</span></li>
+            <li><strong>Cisco ASA</strong><span>411 тыс. событий</span></li>
           </ul>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>Automation queue</h3></div>
+          <div class="panel-head"><h3>Очередь автоматизации</h3></div>
           <ul class="mini-list">
-            <li><strong>Normalize JSON logs</strong><span>running</span></li>
-            <li><strong>RAG enrichment</strong><span>queued</span></li>
-            <li><strong>Slack alert</strong><span>sent</span></li>
-            <li><strong>PDF report</strong><span>ready</span></li>
-            <li><strong>OpenAPI sync</strong><span>scheduled</span></li>
+            <li><strong>Нормализация JSON-логов</strong><span>выполняется</span></li>
+            <li><strong>Обогащение RAG</strong><span>в очереди</span></li>
+            <li><strong>Оповещение Slack</strong><span>отправлено</span></li>
+            <li><strong>PDF-отчёт</strong><span>готов</span></li>
+            <li><strong>Синхронизация OpenAPI</strong><span>запланировано</span></li>
           </ul>
         </div>
       </section>
